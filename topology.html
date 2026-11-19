@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Топология</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap");
+
+/* ===== Палитра ===== */
+:root {
+  --bow: #7e2625;
+  --wood: #3c1b0f;
+  --candle: #f1ecdb;
+  --leaf: #868859;
+  --juniper: #292f17;
+  --night: #181b0d;
+  --text: rgba(241, 236, 219, 0.86);
+  --radius: 14px;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(126, 38, 37, 0.28), transparent 45%),
+    radial-gradient(circle at 92% 45%, rgba(60, 27, 15, 0.7), transparent 55%),
+    var(--juniper);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 20px;
+  line-height: 1.75;
+}
+
+/* ===== Навигация ===== */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(24, 27, 13, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(134, 136, 89, 0.4);
+}
+
+nav a {
+  padding: 8px 26px;
+  color: var(--candle);
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  border-radius: 40px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+nav a:hover { border-color: var(--leaf); color: var(--leaf); }
+
+nav a.active {
+  background: var(--bow);
+  color: var(--candle);
+  box-shadow: 0 4px 16px rgba(126, 38, 37, 0.5);
+}
+
+/* ===== Шапка ===== */
+header.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 70px 20px 60px;
+  text-align: center;
+  background:
+    repeating-linear-gradient(45deg, rgba(241, 236, 219, 0.035) 0 2px, transparent 2px 22px),
+    linear-gradient(160deg, var(--wood) 0%, var(--juniper) 70%, var(--night) 100%);
+  border-bottom: 1px solid rgba(134, 136, 89, 0.4);
+}
+
+header.hero::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--bow), transparent);
+}
+
+.hero-art {
+  width: 190px;
+  height: auto;
+  margin: 0 auto 10px;
+  display: block;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.6));
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+header.hero h1 {
+  margin: 10px 0 6px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 800;
+  font-size: 3.4em;
+  line-height: 1.1;
+  letter-spacing: 1px;
+  background: linear-gradient(180deg, var(--candle), var(--leaf));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+header.hero p {
+  margin: 0 auto;
+  max-width: 560px;
+  font-size: 1.25em;
+  font-style: italic;
+  color: var(--candle);
+  opacity: 0.85;
+}
+
+.divider {
+  width: 90px;
+  height: 3px;
+  margin: 22px auto 0;
+  background: var(--bow);
+  border-radius: 3px;
+}
+
+/* ===== Контент ===== */
+main { max-width: 980px; margin: 0 auto; padding: 20px 22px 70px; }
+
+h2 {
+  position: relative;
+  margin: 60px 0 22px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.9em;
+  color: var(--candle);
+}
+
+h2::after {
+  content: "";
+  display: block;
+  width: 70px;
+  height: 3px;
+  margin-top: 8px;
+  background: linear-gradient(90deg, var(--bow), transparent);
+}
+
+p { margin: 0 0 16px; }
+.lead { font-size: 1.2em; color: var(--candle); }
+
+/* ===== Карточки ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 22px;
+}
+
+.card {
+  position: relative;
+  padding: 26px 24px 18px;
+  background: linear-gradient(160deg, var(--wood), var(--night));
+  border: 1px solid rgba(134, 136, 89, 0.4);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform 0.35s ease, border-color 0.35s ease;
+}
+
+.card:hover { transform: translateY(-6px); border-color: var(--bow); }
+
+.card::before {
+  content: attr(data-n);
+  position: absolute;
+  top: -12px;
+  right: 10px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 5.5em;
+  font-weight: 800;
+  color: rgba(126, 38, 37, 0.4);
+  line-height: 1;
+}
+
+.card h3 {
+  margin: 0 0 8px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.3em;
+  color: var(--candle);
+}
+
+.card p { margin: 0 0 8px; font-size: 0.95em; }
+
+/* ===== Цитата ===== */
+.quote {
+  position: relative;
+  margin: 40px 0;
+  padding: 28px 34px 28px 70px;
+  background: linear-gradient(90deg, rgba(126, 38, 37, 0.55), rgba(126, 38, 37, 0.08));
+  border-left: 5px solid var(--bow);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+  font-size: 1.35em;
+  color: var(--candle);
+}
+
+.quote::before {
+  content: "\201C";
+  position: absolute;
+  left: 18px;
+  top: -8px;
+  font-size: 4.5em;
+  color: var(--leaf);
+}
+
+/* ===== Таблицы ===== */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(134, 136, 89, 0.4);
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+
+th {
+  padding: 14px;
+  background: var(--bow);
+  color: var(--candle);
+  font-family: "Playfair Display", Georgia, serif;
+  letter-spacing: 1px;
+  text-align: left;
+}
+
+td {
+  padding: 12px 14px;
+  background: var(--night);
+  border-top: 1px solid rgba(134, 136, 89, 0.25);
+}
+
+tr:nth-child(even) td { background: var(--wood); }
+tr:hover td { background: rgba(134, 136, 89, 0.3); color: var(--candle); }
+
+/* ===== Списки ===== */
+ul, ol { padding: 0; margin: 0 0 20px; list-style: none; counter-reset: item; }
+
+li {
+  position: relative;
+  margin: 10px 0;
+  padding: 12px 18px 12px 58px;
+  background: rgba(24, 27, 13, 0.7);
+  border-radius: 10px;
+  border: 1px solid rgba(134, 136, 89, 0.3);
+  transition: background 0.3s;
+}
+
+li:hover { background: rgba(60, 27, 15, 0.8); }
+
+ul li::before { content: "\25C6"; position: absolute; left: 20px; color: var(--bow); }
+
+ol li { counter-increment: item; }
+
+ol li::before {
+  content: counter(item);
+  position: absolute;
+  left: 14px;
+  top: 11px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--leaf);
+  color: var(--night);
+  font-weight: 600;
+  font-size: 0.85em;
+}
+
+/* ===== Ссылки и кнопки ===== */
+a { color: var(--candle); text-decoration-color: var(--leaf); text-underline-offset: 4px; }
+a:hover { color: var(--leaf); }
+
+.btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 12px 34px;
+  background: var(--bow);
+  border: 1px solid rgba(241, 236, 219, 0.35);
+  border-radius: 40px;
+  color: var(--candle);
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  background: #962e2d;
+  box-shadow: 0 10px 22px rgba(126, 38, 37, 0.55);
+  color: var(--candle);
+}
+
+/* ===== Подвал ===== */
+footer {
+  padding: 30px 20px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--juniper), var(--night));
+  border-top: 1px solid rgba(134, 136, 89, 0.4);
+  font-size: 0.9em;
+  color: var(--leaf);
+}
+
+footer a { color: var(--candle); }
+
+@media (max-width: 640px) {
+  body { font-size: 18px; }
+  header.hero h1 { font-size: 2.2em; }
+  nav a { padding: 7px 14px; }
+  .quote { padding: 24px 20px 24px 50px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.htm">Невозможные фигуры</a>
+  <a href="topology.htm" class="active">Топология</a>
+</nav>
+
+<header class="hero">
+  <svg class="hero-art" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M30,60 C30,15 100,15 100,60 C100,105 170,105 170,60 C170,15 100,15 100,60 C100,105 30,105 30,60 Z"
+          fill="none" stroke="#f1ecdb" stroke-width="16" stroke-linejoin="round"/>
+    <path d="M30,60 C30,15 100,15 100,60 C100,105 170,105 170,60 C170,15 100,15 100,60 C100,105 30,105 30,60 Z"
+          fill="none" stroke="#7e2625" stroke-width="5" stroke-linejoin="round"/>
+  </svg>
+  <h1>Топология</h1>
+  <p>Наука о свойствах, которые не меняются при растяжении и сжатии</p>
+  <div class="divider"></div>
+</header>
+
+<main>
+
+  <h2>Резиновая геометрия</h2>
+  <p class="lead">Топология изучает свойства фигур, которые сохраняются при непрерывных деформациях: можно растягивать, сжимать и изгибать, но нельзя рвать и склеивать.</p>
+  <p>Поэтому для тополога чашка и бублик — одна и та же фигура: у каждой из них ровно одна дырка.</p>
+
+  <div class="quote">
+    Тополог не отличает кофейную чашку от бублика.
+  </div>
+
+  <h2>Главные объекты</h2>
+
+  <div class="grid">
+    <div class="card" data-n="1">
+      <h3>Лист Мёбиуса</h3>
+      <p>Лента с одной стороной и одним краем. Возьмите полоску бумаги, перекрутите один конец на 180° и склейте концы. Линия посередине обойдёт «обе» стороны, не отрывая карандаш.</p>
+    </div>
+
+    <div class="card" data-n="2">
+      <h3>Бутылка Клейна</h3>
+      <p>Поверхность без внутренней и внешней стороны. В трёхмерном пространстве её нельзя построить без самопересечения — это настоящий «невозможный» объект.</p>
+    </div>
+
+    <div class="card" data-n="3">
+      <h3>Тор</h3>
+      <p>Поверхность бублика. Её род (число дырок) равен 1, а эйлерова характеристика — нулю.</p>
+    </div>
+  </div>
+
+  <h2>Таблица поверхностей</h2>
+  <div class="table-wrap">
+    <table>
+      <tr>
+        <th>Поверхность</th>
+        <th>Число сторон</th>
+        <th>Край</th>
+        <th>Эйлерова характеристика</th>
+      </tr>
+      <tr>
+        <td>Сфера</td>
+        <td>2</td>
+        <td>нет</td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <td>Тор</td>
+        <td>2</td>
+        <td>нет</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>Лист Мёбиуса</td>
+        <td>1</td>
+        <td>есть</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>Бутылка Клейна</td>
+        <td>1</td>
+        <td>нет</td>
+        <td>0</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2>Задача о кёнигсбергских мостах</h2>
+  <p>В 1736 году Леонард Эйлер доказал, что нельзя пройти по всем семи мостам Кёнигсберга, пройдя каждый ровно один раз. Это решение считают началом теории графов и топологии.</p>
+  <ul>
+    <li>Берега и острова — вершины графа.</li>
+    <li>Мосты — рёбра графа.</li>
+    <li>Обход возможен, если нечётных вершин не больше двух.</li>
+    <li>В Кёнигсберге все четыре вершины нечётные, поэтому маршрута нет.</li>
+  </ul>
+
+  <h2>Связь с невозможными фигурами</h2>
+  <p>Невозможный треугольник Пенроуза — это локально согласованная, но глобально противоречивая структура. Топологи описывают такое явление на языке «когомологий»: мелкие куски склеиваются, а целое — нет.</p>
+
+  <a class="btn" href="index.htm">&laquo; Вернуться к невозможным фигурам</a>
+
+</main>
+
+<footer>
+  &copy; 2026 Геометрия невозможного &middot; <a href="index.htm">Невозможные фигуры</a>
+</footer>
+
+</body>
+</html>
